@@ -4,54 +4,49 @@
 <meta charset="UTF-8">
 <title>Flappy Bird - Cute Message with Image</title>
 <style>
-* { margin: 0; padding: 0; }
-body, html { height: 100%; overflow: hidden; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 100%; height: 100%; overflow: hidden; background: #70c5ce; }
+
 canvas {
-  display: block;
-  margin: 0 auto;
-  background: #70c5ce;
-  background-size: cover;
-  background-position: center;
-  width: 100vw;
-  height: 100vh;
+    display: block;
+    margin: 0 auto;
+    background: #70c5ce;
 }
 
+/* Message Box */
 #message {
-  position: absolute;
-  top: 15%;          /* একটু নিচে নামানো */
-  left: 50%;
-  transform: translate(-50%, 0) scale(0);  /* translate Y কমিয়ে 0 করা */
-  text-align: center;
-  font-size: 40px;
-  font-weight: bold;
-  color: white; /* সাদা লেখা */
-  font-family: Arial, sans-serif;
-  background-color: #2a5298; /* হালকা আকাশী ব্যাকগ্রাউন্ড */
-  padding: 15px 15px;
-  border-radius: 200px;
-  opacity: 0;
-  transition: all 0.7s ease;
-  pointer-events: none;
-  z-index: 10;
-  white-space: nowrap; /* এক লাইনে লেখা রাখবে */
-}
-#cuteImage {
-  position: absolute;
-  top: 55%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0);
-  max-width: 300px;
-  border-radius: 20px;
-  opacity: 0;
-  transition: all 0.7s ease;
-  pointer-events: none;
-  z-index: 10;
+    position: absolute;
+    top: 15%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    font-size: 40px;
+    font-weight: bold;
+    color: white;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #2a5298, #1e3c72);
+    padding: 20px 40px;
+    border-radius: 30px;
+    opacity: 0;
+    transition: all 0.7s ease;
+    white-space: nowrap;
+    z-index: 10;
 }
 
-/* zoom in class */
+#cuteImage {
+    position: absolute;
+    top: 55%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    max-width: 300px;
+    border-radius: 20px;
+    opacity: 0;
+    transition: all 0.7s ease;
+    z-index: 10;
+}
+
 .show {
-  opacity: 1 !important;
-  transform: translate(-50%, -50%) scale(1) !important;
+    opacity: 1 !important;
+    transform: translate(-50%, -50%) scale(1) !important;
 }
 </style>
 </head>
@@ -59,35 +54,27 @@ canvas {
 
 <canvas id="gameCanvas" width="400" height="600"></canvas>
 <div id="message">এটা আমি, মাহিরা 😀</div>
-<img id="cuteImage" src="" alt="cute image">
+<img id="cuteImage" src="https://i.postimg.cc/9fzscNps/Messenger-creation-4-EB9-B042-ABF8-4687-AA29-2-C7950-B8817-D.jpg">
 
 <script>
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
+
 const messageDiv = document.getElementById('message');
 const cuteImgTag = document.getElementById('cuteImage');
 
-// তোমার cute image লিংক এখানে বসাও
-const cuteImageSrc = "https://i.postimg.cc/9fzscNps/Messenger-creation-4-EB9-B042-ABF8-4687-AA29-2-C7950-B8817-D.jpg";
-
-const backgroundImgSrc = "https://i.postimg.cc/9QXTsPf4/images-2.png";
-const birdImgSrc = "https://i.postimg.cc/qMhxjxzp/Picsart-25-07-21-23-22-33-678.png";
-const pipeImgSrc = "https://i.postimg.cc/k59H0pbQ/1000041805-removebg-preview.png";
-
-cuteImgTag.src = cuteImageSrc;
-
-const backgroundImg = new Image(); backgroundImg.src = backgroundImgSrc;
-const birdImg = new Image(); birdImg.src = birdImgSrc;
-const pipeImg = new Image(); pipeImg.src = pipeImgSrc;
+const backgroundImg = new Image(); backgroundImg.src = "https://i.postimg.cc/9QXTsPf4/images-2.png";
+const birdImg = new Image(); birdImg.src = "https://i.postimg.cc/qMhxjxzp/Picsart-25-07-21-23-22-33-678.png";
+const pipeImg = new Image(); pipeImg.src = "https://i.postimg.cc/k59H0pbQ/1000041805-removebg-preview.png";
 
 let bird = {
-  x: 50,
-  y: 150,
-  width: 120,
-  height: 120,
-  gravity: 0.25,
-  lift: -6.5,
-  velocity: 0
+    x: 50,
+    y: 150,
+    width: 120,
+    height: 120,
+    gravity: 0.25,
+    lift: -6.5,
+    velocity: 0
 };
 
 let pipes = [];
@@ -96,124 +83,124 @@ let gameOver = false;
 let score = 0;
 let showCuteMessage = false;
 
+// ✅ This keeps your original timing intact
 canvas.addEventListener('click', () => {
-  if (gameOver) {
-    resetGame();
-    messageDiv.classList.remove('show');
-    cuteImgTag.classList.remove('show');
-  } else {
-    bird.velocity = bird.lift;
-  }
+    if (gameOver) {
+        resetGame();
+        messageDiv.classList.remove('show');
+        cuteImgTag.classList.remove('show');
+    } else {
+        bird.velocity = bird.lift;
+    }
 });
 
 function resetGame() {
-  bird.y = 150;
-  bird.velocity = 0;
-  pipes = [];
-  frame = 0;
-  score = 0;
-  gameOver = false;
-  showCuteMessage = false;
+    bird.y = 150;
+    bird.velocity = 0;
+    pipes = [];
+    frame = 0;
+    score = 0;
+    gameOver = false;
+    showCuteMessage = false;
 }
 
 function drawBackground() {
-  if (backgroundImg.complete) ctx.drawImage(backgroundImg, 0, 0, canvas.width, canvas.height);
-  else {
-    ctx.fillStyle = '#70c5ce';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-  }
+    if (backgroundImg.complete) ctx.drawImage(backgroundImg, 0, 0, canvas.width, canvas.height);
+    else {
+        ctx.fillStyle = '#70c5ce';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
 }
 
 function drawBird() {
-  ctx.save();
-  ctx.beginPath();
-  ctx.arc(bird.x + bird.width / 2, bird.y + bird.height / 2, bird.width * 0.4, 0, Math.PI * 2);
-  ctx.closePath();
-  ctx.clip();
-  ctx.drawImage(birdImg, bird.x, bird.y, bird.width, bird.height);
-  ctx.restore();
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(bird.x + bird.width/2, bird.y + bird.height/2, bird.width*0.4, 0, Math.PI*2);
+    ctx.closePath();
+    ctx.clip();
+    ctx.drawImage(birdImg, bird.x, bird.y, bird.width, bird.height);
+    ctx.restore();
 }
 
 function drawPipe(pipe) {
-  ctx.save();
-  ctx.translate(pipe.x + pipe.width / 2, pipe.top);
-  ctx.rotate(Math.PI);
-  ctx.drawImage(pipeImg, -pipe.width / 2, 0, pipe.width, pipe.top);
-  ctx.restore();
-  ctx.drawImage(pipeImg, pipe.x, pipe.top + pipe.gap, pipe.width, canvas.height);
+    ctx.save();
+    ctx.translate(pipe.x + pipe.width/2, pipe.top);
+    ctx.rotate(Math.PI);
+    ctx.drawImage(pipeImg, -pipe.width/2, 0, pipe.width, pipe.top);
+    ctx.restore();
+    ctx.drawImage(pipeImg, pipe.x, pipe.top + pipe.gap, pipe.width, canvas.height);
 }
 
 function drawScore() {
-  ctx.fillStyle = 'black';
-  ctx.font = '24px Arial';
-  ctx.fillText('Score: ' + score, 10, 30);
+    ctx.fillStyle = 'black';
+    ctx.font = '24px Arial';
+    ctx.fillText('Score: ' + score, 10, 30);
 }
 
 function update() {
-  if (gameOver) return;
+    if (gameOver) return;
+    bird.velocity += bird.gravity;
+    bird.y += bird.velocity;
 
-  bird.velocity += bird.gravity;
-  bird.y += bird.velocity;
-
-  if (frame % 100 === 0) {
-    let topPipeHeight = Math.random() * 250 + 50;
-    let gap = 260;
-    pipes.push({ x: canvas.width, top: topPipeHeight, width: 80, gap: gap });
-  }
-
-  pipes.forEach(pipe => {
-    pipe.x -= 2.3;
-    if (
-      bird.x + bird.width * 0.8 > pipe.x &&
-      bird.x + bird.width * 0.2 < pipe.x + pipe.width &&
-      (bird.y + bird.height * 0.8 > pipe.top + pipe.gap || bird.y + bird.height * 0.2 < pipe.top)
-    ) {
-      gameOver = true;
+    if (frame % 100 === 0) {
+        let topPipeHeight = Math.random() * 250 + 50;
+        let gap = 260;
+        pipes.push({ x: canvas.width, top: topPipeHeight, width: 80, gap: gap });
     }
-  });
 
-  pipes = pipes.filter(pipe => pipe.x + pipe.width > 0);
+    pipes.forEach(pipe => {
+        pipe.x -= 2.3;
+        if (
+            bird.x + bird.width*0.8 > pipe.x &&
+            bird.x + bird.width*0.2 < pipe.x + pipe.width &&
+            (bird.y + bird.height*0.8 > pipe.top + pipe.gap || bird.y + bird.height*0.2 < pipe.top)
+        ) {
+            gameOver = true;
+        }
+    });
 
-  if (bird.y + bird.height > canvas.height || bird.y < 0) gameOver = true;
+    pipes = pipes.filter(pipe => pipe.x + pipe.width > 0);
 
-  score = Math.floor(frame / 100);
+    if (bird.y + bird.height > canvas.height || bird.y < 0) gameOver = true;
 
-  if (score >= 25 && !showCuteMessage) {
-    showCuteMessage = true;
-    messageDiv.classList.add('show');
-    cuteImgTag.classList.add('show');
-  }
+    score = Math.floor(frame / 100);
 
-  frame++;
+    if (score >= 25 && !showCuteMessage) {
+        showCuteMessage = true;
+        messageDiv.classList.add('show');
+        cuteImgTag.classList.add('show');
+    }
+
+    frame++;
 }
 
 function draw() {
-  drawBackground();
-  drawBird();
-  pipes.forEach(drawPipe);
-  drawScore();
+    drawBackground();
+    drawBird();
+    pipes.forEach(drawPipe);
+    drawScore();
 
-  if (gameOver) {
-    ctx.fillStyle = 'red';
-    ctx.font = '48px Arial';
-    ctx.fillText('Game Over', 80, canvas.height / 2);
-    ctx.font = '24px Arial';
-    ctx.fillText('Click to Restart', 110, canvas.height / 2 + 40);
-  }
+    if (gameOver) {
+        ctx.fillStyle = 'red';
+        ctx.font = '48px Arial';
+        ctx.fillText('Game Over', 80, canvas.height/2);
+        ctx.font = '24px Arial';
+        ctx.fillText('Click to Restart', 110, canvas.height/2 + 40);
+    }
 }
 
 function gameLoop() {
-  update();
-  draw();
-  requestAnimationFrame(gameLoop);
+    update();
+    draw();
+    requestAnimationFrame(gameLoop);
 }
 
 let loaded = 0;
 [backgroundImg, birdImg, pipeImg].forEach(img => {
-  img.onload = () => {
-    loaded++;
-    if (loaded === 3) gameLoop();
-  };
+    img.onload = () => {
+        loaded++;
+        if (loaded === 3) gameLoop();
+    };
 });
 </script>
 </body>
