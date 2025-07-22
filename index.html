@@ -2,36 +2,31 @@
 <html lang="bn">
 <head>
 <meta charset="UTF-8">
-<title>Flappy Bird - Cute Message with Image</title>
+<title>Flappy Bird - Fullscreen Fixed Jump</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-html, body { width: 100%; height: 100%; overflow: hidden; background: #70c5ce; }
-
+html, body { width: 100%; height: 100%; overflow: hidden; }
 canvas {
     display: block;
-    margin: 0 auto;
     background: #70c5ce;
 }
-
-/* Message Box */
 #message {
     position: absolute;
     top: 15%;
     left: 50%;
-    transform: translate(-50%, -50%) scale(0);
+    transform: translate(-50%, 0) scale(0);
+    text-align: center;
     font-size: 40px;
     font-weight: bold;
     color: white;
     font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #2a5298, #1e3c72);
-    padding: 20px 40px;
-    border-radius: 30px;
+    background-color: #2a5298;
+    padding: 15px 15px;
+    border-radius: 200px;
     opacity: 0;
-    transition: all 0.7s ease;
+    transition: all 0.5s ease;
     white-space: nowrap;
-    z-index: 10;
 }
-
 #cuteImage {
     position: absolute;
     top: 55%;
@@ -40,10 +35,8 @@ canvas {
     max-width: 300px;
     border-radius: 20px;
     opacity: 0;
-    transition: all 0.7s ease;
-    z-index: 10;
+    transition: all 0.5s ease;
 }
-
 .show {
     opacity: 1 !important;
     transform: translate(-50%, -50%) scale(1) !important;
@@ -52,16 +45,25 @@ canvas {
 </head>
 <body>
 
-<canvas id="gameCanvas" width="400" height="600"></canvas>
+<canvas id="gameCanvas"></canvas>
 <div id="message">এটা আমি, মাহিরা 😀</div>
-<img id="cuteImage" src="https://i.postimg.cc/9fzscNps/Messenger-creation-4-EB9-B042-ABF8-4687-AA29-2-C7950-B8817-D.jpg">
+<img id="cuteImage" src="https://i.postimg.cc/9fzscNps/Messenger-creation-4-EB9-B042-ABF8-4687-AA29-2-C7950-B8817-D.jpg" alt="cute image">
 
 <script>
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-
 const messageDiv = document.getElementById('message');
 const cuteImgTag = document.getElementById('cuteImage');
+
+let cw, ch;
+function resizeCanvas() {
+    cw = window.innerWidth;
+    ch = window.innerHeight;
+    canvas.width = cw;
+    canvas.height = ch;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
 
 const backgroundImg = new Image(); backgroundImg.src = "https://i.postimg.cc/9QXTsPf4/images-2.png";
 const birdImg = new Image(); birdImg.src = "https://i.postimg.cc/qMhxjxzp/Picsart-25-07-21-23-22-33-678.png";
@@ -77,47 +79,23 @@ let bird = {
     velocity: 0
 };
 
-let pipes = [];
-let frame = 0;
-let gameOver = false;
-let score = 0;
-let showCuteMessage = false;
-
-// ✅ This keeps your original timing intact
-canvas.addEventListener('click', () => {
-    if (gameOver) {
-        resetGame();
-        messageDiv.classList.remove('show');
-        cuteImgTag.classList.remove('show');
-    } else {
-        bird.velocity = bird.lift;
-    }
-});
+let pipes = [], frame = 0, gameOver = false, score = 0, showCuteMessage = false;
 
 function resetGame() {
-    bird.y = 150;
-    bird.velocity = 0;
-    pipes = [];
-    frame = 0;
-    score = 0;
-    gameOver = false;
-    showCuteMessage = false;
+    bird.y = 150; bird.velocity = 0;
+    pipes = []; frame = 0; score = 0; gameOver = false; showCuteMessage = false;
+    messageDiv.classList.remove('show'); cuteImgTag.classList.remove('show');
 }
 
 function drawBackground() {
-    if (backgroundImg.complete) ctx.drawImage(backgroundImg, 0, 0, canvas.width, canvas.height);
-    else {
-        ctx.fillStyle = '#70c5ce';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-    }
+    ctx.drawImage(backgroundImg, 0, 0, cw, ch);
 }
 
 function drawBird() {
     ctx.save();
     ctx.beginPath();
     ctx.arc(bird.x + bird.width/2, bird.y + bird.height/2, bird.width*0.4, 0, Math.PI*2);
-    ctx.closePath();
-    ctx.clip();
+    ctx.closePath(); ctx.clip();
     ctx.drawImage(birdImg, bird.x, bird.y, bird.width, bird.height);
     ctx.restore();
 }
@@ -128,7 +106,7 @@ function drawPipe(pipe) {
     ctx.rotate(Math.PI);
     ctx.drawImage(pipeImg, -pipe.width/2, 0, pipe.width, pipe.top);
     ctx.restore();
-    ctx.drawImage(pipeImg, pipe.x, pipe.top + pipe.gap, pipe.width, canvas.height);
+    ctx.drawImage(pipeImg, pipe.x, pipe.top + pipe.gap, pipe.width, ch);
 }
 
 function drawScore() {
@@ -145,32 +123,27 @@ function update() {
     if (frame % 100 === 0) {
         let topPipeHeight = Math.random() * 250 + 50;
         let gap = 260;
-        pipes.push({ x: canvas.width, top: topPipeHeight, width: 80, gap: gap });
+        pipes.push({ x: cw, top: topPipeHeight, width: 80, gap });
     }
 
     pipes.forEach(pipe => {
         pipe.x -= 2.3;
-        if (
-            bird.x + bird.width*0.8 > pipe.x &&
+        if (bird.x + bird.width*0.8 > pipe.x &&
             bird.x + bird.width*0.2 < pipe.x + pipe.width &&
-            (bird.y + bird.height*0.8 > pipe.top + pipe.gap || bird.y + bird.height*0.2 < pipe.top)
-        ) {
+            (bird.y + bird.height*0.8 > pipe.top + pipe.gap || bird.y + bird.height*0.2 < pipe.top)) {
             gameOver = true;
         }
     });
 
     pipes = pipes.filter(pipe => pipe.x + pipe.width > 0);
-
-    if (bird.y + bird.height > canvas.height || bird.y < 0) gameOver = true;
+    if (bird.y + bird.height > ch || bird.y < 0) gameOver = true;
 
     score = Math.floor(frame / 100);
-
     if (score >= 25 && !showCuteMessage) {
         showCuteMessage = true;
         messageDiv.classList.add('show');
         cuteImgTag.classList.add('show');
     }
-
     frame++;
 }
 
@@ -183,9 +156,9 @@ function draw() {
     if (gameOver) {
         ctx.fillStyle = 'red';
         ctx.font = '48px Arial';
-        ctx.fillText('Game Over', 80, canvas.height/2);
+        ctx.fillText('Game Over', cw/2 - 130, ch/2);
         ctx.font = '24px Arial';
-        ctx.fillText('Click to Restart', 110, canvas.height/2 + 40);
+        ctx.fillText('Tap to Restart', cw/2 - 90, ch/2 + 40);
     }
 }
 
@@ -195,12 +168,21 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
 }
 
+function jump() {
+    if (gameOver) resetGame();
+    else bird.velocity = bird.lift;
+}
+
+// Detect only touch OR click — Prevent double trigger
+if ('ontouchstart' in window) {
+    canvas.addEventListener('touchstart', jump);
+} else {
+    canvas.addEventListener('click', jump);
+}
+
 let loaded = 0;
 [backgroundImg, birdImg, pipeImg].forEach(img => {
-    img.onload = () => {
-        loaded++;
-        if (loaded === 3) gameLoop();
-    };
+    img.onload = () => { loaded++; if (loaded === 3) gameLoop(); };
 });
 </script>
 </body>
